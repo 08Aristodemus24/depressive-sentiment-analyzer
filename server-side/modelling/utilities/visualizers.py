@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+import matplotlib as mplt
 import matplotlib.pyplot as plt
 plt.rcParams['font.family'] = 'sans-serif'
 font = {'fontname': 'Helvetica'}
@@ -8,14 +9,21 @@ font = {'fontname': 'Helvetica'}
 import matplotlib.cm as cm
 import seaborn as sb
 
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import (
+  accuracy_score, 
+  precision_score, 
+  recall_score, 
+  f1_score, 
+  roc_auc_score, 
+  mean_squared_error, 
+  mean_absolute_error)
 from sklearn.manifold import TSNE
 
 import itertools
 
 
 
-def data_split_metric_values(Y_true, Y_pred):
+def data_split_metric_values(Y_true, Y_pred, metrics_to_use: list=['accuracy', 'precision', 'recall', 'f1', 'roc-auc']):
     """
     args:
         Y_true - a vector of the real Y values of a data split e.g. the 
@@ -32,26 +40,24 @@ def data_split_metric_values(Y_true, Y_pred):
         metrics in evaluating an ML model e.g. accuracy, precision,
         recall, and f1-score.
     """
-
     unique_labels = np.unique(Y_true)
 
-    # accuracy: (tp + tn) / (p + n)
-    accuracy = accuracy_score(Y_true, Y_pred)
-    print('Accuracy: {:.2%}'.format(accuracy))
+    metrics = {
+        'accuracy': accuracy_score(Y_true, Y_pred),
+        'rmse': np.sqrt(mean_squared_error(Y_true, Y_pred)),
+        'mse': mean_squared_error(Y_true, Y_pred),
+        'precision': precision_score(Y_true, Y_pred, labels=unique_labels, average='weighted'),
+        'recall': recall_score(Y_true, Y_pred, labels=unique_labels, average='weighted'),
+        'f1': f1_score(Y_true, Y_pred, labels=unique_labels, average='weighted'),
+        'roc-auc': roc_auc_score(Y_true, Y_pred, labels=unique_labels, average='weighted')
+    }
 
-    # precision tp / (tp + fp)
-    precision = precision_score(Y_true, Y_pred, labels=unique_labels, average='weighted')
-    print('Precision: {:.2%}'.format(precision))
+    # create metric_values dictionary
+    metric_values = {}
+    for index, metric in enumerate(metrics_to_use):
+      metric_values[metric] = metrics[metric]
 
-    # recall: tp / (tp + fn)
-    recall = recall_score(Y_true, Y_pred, labels=unique_labels,average='weighted')
-    print('Recall: {:.2%}'.format(recall))
-
-    # f1: 2 tp / (2 tp + fp + fn)
-    f1 = f1_score(Y_true, Y_pred, labels=unique_labels,average='weighted')
-    print('F1 score: {:.2%}\n'.format(f1))
-
-    return accuracy, precision, recall, f1
+    return metric_values
 
 def view_words(word_vec: dict, word_range: int, title: str="untitled", save_img: bool=True):
     """
@@ -175,7 +181,7 @@ def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnB
         plt.savefig(f'./figures & images/{img_title}.png')
         plt.show()
 
-def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=True, colors: list=['#2ac5b9', '#1ca3b6', '#0a557a', '#01363e',]):
+def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=True, colormap: str='mako'):
     """
     given a each list of the training, validation, and testing set
     groups accuracy, precision, recall, and f1-score, plot a bar
@@ -197,12 +203,25 @@ def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=Tru
         'f1-score': [train_f1, val_f1, test_f1]
     })
     """
+    colors = []
+
+    # excludes the data split column
+    n_metrics = metrics_df.shape[1] - 1
+    rgb_colors = cm.get_cmap(colormap, n_metrics)
+    for i in range(rgb_colors.N):
+        rgb_color = rgb_colors(i)
+        colors.append(str(mplt.colors.rgb2hex(rgb_color)))
+    colors = np.array(colors)
+
+    # sample n ids based on number of metrics of metrics df
+    sampled_ids = np.random.choice(list(range(colors.shape[0])), size=n_metrics, replace=False)
+    sampled_colors = colors[sampled_ids]
 
     fig = plt.figure(figsize=(15, 10))
     axis = fig.add_subplot()
 
     # uses the given array of the colors you want to use
-    sb.set_palette(sb.color_palette(colors))
+    sb.set_palette(sb.color_palette(sampled_colors))
 
     # create accuracy, precision, recall, f1-score of training group
     # create accuracy, precision, recall, f1-score of validation group
@@ -530,3 +549,176 @@ def view_all_splits_results(history_dict: dict, save_img: bool=True, img_title: 
         print(save_img)
         plt.savefig(f'./figures & images/{img_title}.png')
         plt.show()
+
+"""Here are all the available colormaps in matplotlib
+['magma',
+ 'inferno',
+ 'plasma',
+ 'viridis',
+ 'cividis',
+ 'twilight',
+ 'twilight_shifted',
+ 'turbo',
+ 'Blues',
+ 'BrBG',
+ 'BuGn',
+ 'BuPu',
+ 'CMRmap',
+ 'GnBu',
+ 'Greens',
+ 'Greys',
+ 'OrRd',
+ 'Oranges',
+ 'PRGn',
+ 'PiYG',
+ 'PuBu',
+ 'PuBuGn',
+ 'PuOr',
+ 'PuRd',
+ 'Purples',
+ 'RdBu',
+ 'RdGy',
+ 'RdPu',
+ 'RdYlBu',
+ 'RdYlGn',
+ 'Reds',
+ 'Spectral',
+ 'Wistia',
+ 'YlGn',
+ 'YlGnBu',
+ 'YlOrBr',
+ 'YlOrRd',
+ 'afmhot',
+ 'autumn',
+ 'binary',
+ 'bone',
+ 'brg',
+ 'bwr',
+ 'cool',
+ 'coolwarm',
+ 'copper',
+ 'cubehelix',
+ 'flag',
+ 'gist_earth',
+ 'gist_gray',
+ 'gist_heat',
+ 'gist_ncar',
+ 'gist_rainbow',
+ 'gist_stern',
+ 'gist_yarg',
+ 'gnuplot',
+ 'gnuplot2',
+ 'gray',
+ 'hot',
+ 'hsv',
+ 'jet',
+ 'nipy_spectral',
+ 'ocean',
+ 'pink',
+ 'prism',
+ 'rainbow',
+ 'seismic',
+ 'spring',
+ 'summer',
+ 'terrain',
+ 'winter',
+ 'Accent',
+ 'Dark2',
+ 'Paired',
+ 'Pastel1',
+ 'Pastel2',
+ 'Set1',
+ 'Set2',
+ 'Set3',
+ 'tab10',
+ 'tab20',
+ 'tab20b',
+ 'tab20c',
+ 'grey',
+ 'gist_grey',
+ 'gist_yerg',
+ 'Grays',
+ 'magma_r',
+ 'inferno_r',
+ 'plasma_r',
+ 'viridis_r',
+ 'cividis_r',
+ 'twilight_r',
+ 'twilight_shifted_r',
+ 'turbo_r',
+ 'Blues_r',
+ 'BrBG_r',
+ 'BuGn_r',
+ 'BuPu_r',
+ 'CMRmap_r',
+ 'GnBu_r',
+ 'Greens_r',
+ 'Greys_r',
+ 'OrRd_r',
+ 'Oranges_r',
+ 'PRGn_r',
+ 'PiYG_r',
+ 'PuBu_r',
+ 'PuBuGn_r',
+ 'PuOr_r',
+ 'PuRd_r',
+ 'Purples_r',
+ 'RdBu_r',
+ 'RdGy_r',
+ 'RdPu_r',
+ 'RdYlBu_r',
+ 'RdYlGn_r',
+ 'Reds_r',
+ 'Spectral_r',
+ 'Wistia_r',
+ 'YlGn_r',
+ 'YlGnBu_r',
+ 'YlOrBr_r',
+ 'YlOrRd_r',
+ 'afmhot_r',
+ 'autumn_r',
+ 'binary_r',
+ 'bone_r',
+ 'brg_r',
+ 'bwr_r',
+ 'cool_r',
+ 'coolwarm_r',
+ 'copper_r',
+ 'cubehelix_r',
+ 'flag_r',
+ 'gist_earth_r',
+ 'gist_gray_r',
+ 'gist_heat_r',
+ 'gist_ncar_r',
+ 'gist_rainbow_r',
+ 'gist_stern_r',
+ 'gist_yarg_r',
+ 'gnuplot_r',
+ 'gnuplot2_r',
+ 'gray_r',
+ 'hot_r',
+ 'hsv_r',
+ 'jet_r',
+ 'nipy_spectral_r',
+ 'ocean_r',
+ 'pink_r',
+ 'prism_r',
+ 'rainbow_r',
+ 'seismic_r',
+ 'spring_r',
+ 'summer_r',
+ 'terrain_r',
+ 'winter_r',
+ 'Accent_r',
+ 'Dark2_r',
+ 'Paired_r',
+ 'Pastel1_r',
+ 'Pastel2_r',
+ 'Set1_r',
+ 'Set2_r',
+ 'Set3_r',
+ 'tab10_r',
+ 'tab20_r',
+ 'tab20b_r',
+ 'tab20c_r']
+"""
