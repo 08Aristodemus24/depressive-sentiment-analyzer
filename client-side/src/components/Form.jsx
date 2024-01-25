@@ -89,8 +89,8 @@ export default function Form(){
                     style={style}
                     method="POST"
                 >
-                    <MessageInput/>
                     <ModelNameInput/>
+                    <MessageInput/>
                     <Button/>
                 </form>
                 <div className={`alert ${msgStatus !== undefined ? 'show' : ''}`} onClick={(event) => {
