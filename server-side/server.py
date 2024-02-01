@@ -1,12 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
-import requests
-from requests.exceptions import ConnectionError
-from urllib3.exceptions import MaxRetryError, NameResolutionError
-import json
-from datetime import datetime as dt
-
 # ff. imports are for getting secret values from .env file
 from pathlib import Path
 import os
@@ -20,7 +14,8 @@ from modelling.utilities.preprocessors import (
     rem_stop_words,
     stem_corpus_words,
     lemmatize_corpus_words,
-    strip_final_corpus
+    strip_final_corpus,
+    translate_labels
 )
 
 # configure location of build file and the static html template file
@@ -32,10 +27,9 @@ app = Flask(__name__, template_folder='static')
 # to be included otherwise it will be blocked by CORS policy
 CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5000",])
 
-model_names = []
-models = []
-scaler = None
-encoder = None
+models = {}
+saved_ddr_tfidf_vec = None
+saved_ddr_le = None
 
 def load_models():
     """
@@ -45,8 +39,9 @@ def load_models():
 
     # recreate model architecture
     saved_lgbm_clf = load_model('./modelling/saved/models/lgbm_clf.pkl')
-    model_names.append(type(saved_lgbm).__name__)
-    models.append(saved_lgbm)
+    saved_xgb_clf = load_model('./modelling/saved/models/xgb_clf.pkl')
+    models[type(saved_lgbm_clf).__name__] = saved_lgbm_clf
+    models[type(saved_xgb_clf).__name__] = saved_xgb_clf
 
 def load_preprocessors():
     """
@@ -55,9 +50,9 @@ def load_preprocessors():
     client-side
     """
 
-    global saved_bc_scaler, saved_bc_Y_le
-    saved_bc_scaler = load_model('./modelling/saved/misc/bc_scaler.pkl')
-    saved_bc_Y_le = load_model('./modelling/saved/misc/bc_Y_le.pkl')
+    global saved_ddr_tfidf_vec, saved_ddr_le
+    saved_ddr_tfidf_vec = load_model('./modelling/saved/misc/ddr_tfidf_vec.pkl')
+    saved_ddr_le = load_model('./modelling/saved/misc/ddr_le.pkl')
 
 load_models()
 load_preprocessors()
@@ -78,7 +73,7 @@ def retrieve_model_names():
     """
 
     data = {
-        'model_names': model_names
+        'model_names': list(models.keys())
     }
 
     # return data at once since no error will most likely
@@ -88,56 +83,35 @@ def retrieve_model_names():
 @app.route('/predict', methods=['POST'])
 def predict():
     # extract raw data from client
-    raw_data = request.json
+    raw_data = request.form
     print(raw_data)
 
     # encoding and preprocessing
-    radius_mean = float(raw_data['radius-mean'])
-    texture_mean = float(raw_data['texture-mean'])
-    perimeter_mean = float(raw_data['perimeter-mean'])
-    area_mean = float(raw_data['area-mean'])
-    smoothness_mean = float(raw_data['smoothness-mean'])
+    message = raw_data['message']
+    message = lower_words(message)
+    message = remove_contractions(message)
+    message = rem_non_alpha_num(message)
+    message = rem_numeric(message)
+    message = rem_stop_words(message)
+    message = stem_corpus_words(message)
+    message = lemmatize_corpus_words(message)
+    message = [strip_final_corpus(message)]
+
+    model_name = raw_data['model_name']
+    print(model_name)
+    model = models[model_name]
 
     # once x features are collected normalize the array on the 
     # saved scaler
-    X = [radius_mean, texture_mean, perimeter_mean, area_mean, smoothness_mean]
-    X_normed = saved_bc_scaler.transform(X)
+    X_vec = saved_ddr_tfidf_vec.transform(message)
+    print(X_vec)
     
     # predictor
-    Y_preds = models[0].predict(X_normed)
-    decoded_sparse_Y_preds = saved_bc_Y_le.inverse_transform(Y_preds)
-    translated_labels = translate_labels(decoded_sparse_Y_preds, translations={'M': 'Malignant', 'B': 'Benign'})
+    Y_preds = model.predict(X_vec)
+    print(Y_preds)
+    decoded_sparse_Y_preds = saved_ddr_le.inverse_transform(Y_preds)
+    print(decoded_sparse_Y_preds)
+    translated_labels = translate_labels(decoded_sparse_Y_preds, translations={'DPR': 'Depressive', 'NDP': 'Non-Depressive'})
+    print(translated_labels)
 
-    return jsonify({'diagnosis': translated_labels})
-
-@app.route('/send-data', methods=['POST'])
-def test_predict_a():
-    # extract raw data from client
-    raw_data = request.form
-    raw_files = request.files
-    print(raw_data)
-    print(raw_files)
-
-    first_name = raw_data['first_name']
-    last_name = raw_data['last_name']
-    email_address = raw_data['email_address']
-    country_code = raw_data['country_code']
-    mobile_num = raw_data['mobile_num']
-    message = raw_data['message']
-    model_name = raw_data['model_name']
-    prompt = raw_data['prompt']
-    seq_len = int(raw_data['seq_len'])
-    temperature = float(raw_data['temperature'])
-    image = raw_files['image']
-
-    # preprocessing/encoding image stream into a matrix
-    encoded_img = encode_image(image.stream)
-    rescaled_img = standardize_image(encoded_img)
-    print(rescaled_img.max())
-    print(rescaled_img.shape)
-
-    # predictor
-    
-
-
-    return jsonify({'test': 0})
+    return jsonify({'sentiment': translated_labels.tolist()})

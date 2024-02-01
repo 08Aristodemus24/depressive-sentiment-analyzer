@@ -278,7 +278,7 @@
   border-left: none;
   border-bottom: 1px solid var(--primary-color);
 
-  width: 12rem;
+  width: clamp(12rem, 24vw, 24rem);
   /* width: 30rem; */
 
   /* display */
@@ -327,7 +327,7 @@
   border: none;
 
   /* size */
-  width: 12rem;
+  width: clamp(12rem, 24vw, 24rem);
   padding: 0.5em 1em;
   /* width: 30rem; */
 
@@ -381,7 +381,7 @@
   border: none;
 
   /* size */
-  width: 12rem;
+  width: clamp(12rem, 24vw, 24rem);
   padding: 0.5em 1em;
   /* width: 30rem; */
 
@@ -492,6 +492,68 @@
   box-shadow: 
       inset 3px 7px 8px 0 var(--primary-shadow),
       inset -2px -2px 5px 0 var(--secondary-shadow);
+}
+
+.sharp-minimal.predictions-container{
+  /* design */
+  background-color: transparent;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 300;
+  font-size: clamp(12px, 1vw, 1rem);
+  color: var(--primary-color);
+  border: none;
+  outline: 1px solid var(--primary-color);
+  
+  /* size */
+  padding: .5em 5em;
+
+  /* alignment */
+  justify-self: center;
+
+  /* animation */
+  transition-property: background-color, color;
+  transition-duration: 250ms, 250ms;
+  transition-timing-function: ease-in-out, ease-in-out;
+}
+
+.light-neomorphic.predictions-container{
+  /* design */
+  background-color: var(--secondary-color);
+  box-shadow: 
+      3px 3px 8px 0 var(--primary-shadow),
+      -10px -10px 15px 0 var(--secondary-shadow);
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(12px, 1vw, 1rem);
+  font-weight: 300;
+  color: var(--primary-color);
+  border-radius: 10px;
+  border: none;
+
+  /* size */
+  padding: .5em 5em;  
+
+  /* alignment */
+  justify-self: center;
+}
+
+.dark-neomorphic.predictions-container{
+  /* design */
+  background-color: var(--secondary-color);
+  box-shadow: 
+      3px 7px 8px 0 var(--primary-shadow),
+      -2px -2px 8px 0 var(--secondary-shadow);
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(12px, 1vw, 1rem);
+  font-weight: 300;
+  color: var(--primary-color);
+  border-radius: 10px;
+  border: none;
+
+  /* size */
+  padding: .5em 5em;  
+
+  /* alignment */
+  justify-self: center;
 }
 
 .alert{

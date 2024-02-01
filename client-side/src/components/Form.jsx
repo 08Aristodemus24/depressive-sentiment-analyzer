@@ -1,6 +1,7 @@
 import MessageInput from './MessageInput';
 import ModelNameInput from './ModelNameInput';
 import Button from "./Button";
+import Predictions from './Predictions';
 
 import { useContext, useState } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -11,6 +12,7 @@ import { FormInputsContext } from "../contexts/FormInputsContext";
 export default function Form(){
     let [message, setMessage] = useState("");
     let [modelName, setModelName] = useState("");
+    console.log(modelName)
 
     let style;
     const designs = useContext(DesignsContext);
@@ -40,7 +42,7 @@ export default function Form(){
             // once data is validated submitted and then extracted
             // reset form components form element
             setMessage("");
-            setModelName("");            
+            setModelName(modelName);
 
             // send here the data from the contact component to 
             // the backend proxy server
@@ -53,7 +55,10 @@ export default function Form(){
                 'method': 'POST',
                 'body': form_data,
             });
-            setResponse(resp);
+            
+            const data = await resp.json();
+            console.log(data);  
+            setResponse(data);
 
             // if response.status is 200 then that means contact information
             // has been successfully sent to the email.js api
@@ -81,6 +86,7 @@ export default function Form(){
         <FormInputsContext.Provider value={{
             message, setMessage,
             modelName, setModelName,
+            response,
             handleSubmit,
         }}>
             <div className="form-container">
@@ -92,6 +98,7 @@ export default function Form(){
                     <ModelNameInput/>
                     <MessageInput/>
                     <Button/>
+                    <Predictions/>
                 </form>
                 <div className={`alert ${msgStatus !== undefined ? 'show' : ''}`} onClick={(event) => {
                     // remove class from alert container to hide it again
