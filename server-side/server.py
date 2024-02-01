@@ -13,10 +13,14 @@ import os
 
 from modelling.utilities.loaders import load_model
 from modelling.utilities.preprocessors import (
-    
-)
-from modelling.utilities.visualizers import (
-    
+    lower_words,
+    remove_contractions,
+    rem_non_alpha_num,
+    rem_numeric,
+    rem_stop_words,
+    stem_corpus_words,
+    lemmatize_corpus_words,
+    strip_final_corpus
 )
 
 # configure location of build file and the static html template file
@@ -40,7 +44,7 @@ def load_models():
     """
 
     # recreate model architecture
-    saved_lgbm = load_model('./modelling/saved/models/lgbm.pkl')
+    saved_lgbm_clf = load_model('./modelling/saved/models/lgbm_clf.pkl')
     model_names.append(type(saved_lgbm).__name__)
     models.append(saved_lgbm)
 

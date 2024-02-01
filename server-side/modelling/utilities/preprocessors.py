@@ -11,7 +11,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import pandas as pd
 import numpy as np
 import ast
-import tensorflow as tf
 
 # download stopwords and wordnet if not already downloaded
 nltk.download('stopwords')
@@ -312,25 +311,6 @@ def flatten_series_of_lists(column: pd.Series):
     """
 
     return pd.Series([item for sublist in column for item in sublist])
-
-def one_hot_encode(sparse_labels):
-    """
-    one hot encodes a sparse multi-class label
-    e.g. if in sparse labels contain [0 1 2 0 3]
-    one hot encoding would be
-    [[1 0 0 0]
-    [0 1 0 0]
-    [0 0 1 0]
-    [1 0 0 0]
-    [0 0 0 1]]
-
-    used only during training and validation
-    """
-
-    n_unique = np.unique(sparse_labels).shape[0]
-    one_hot_encoding = tf.one_hot(sparse_labels, depth=n_unique)
-
-    return one_hot_encoding
 
 def decode_one_hot(Y_preds):
     """

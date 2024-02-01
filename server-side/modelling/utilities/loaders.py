@@ -1,18 +1,6 @@
 import pickle
 import json
 import pandas as pd
-import tensorflow as tf
-
-
-def device_exists():
-    """
-    returns true if gpu device exists
-    """
-
-    device_name = tf.test.gpu_device_name()
-    if device_name != '/device:GPU:0':
-        return False
-    return True
 
 # for NLP data
 def load_corpus(path: str):
