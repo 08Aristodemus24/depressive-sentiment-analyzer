@@ -40,8 +40,10 @@ def load_models():
     # recreate model architecture
     saved_lgbm_clf = load_model('./modelling/saved/models/lgbm_clf.pkl')
     saved_xgb_clf = load_model('./modelling/saved/models/xgb_clf.pkl')
+    saved_ada_clf = load_model('./modelling/saved/models/ada_clf.pkl')
     models[type(saved_lgbm_clf).__name__] = saved_lgbm_clf
     models[type(saved_xgb_clf).__name__] = saved_xgb_clf
+    models[type(saved_ada_clf).__name__] = saved_ada_clf
 
 def load_preprocessors():
     """
