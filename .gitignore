@@ -1,9 +1,6 @@
 /server-side/modelling/weights/
 /server-side/modelling/data/
 /server-side/modelling/tuned_model/
-/shop-visual-aids/*.mp4
-/shop-visual-aids/*.mov
-/raw-videos/
 /.env
 
 # Logs
