@@ -109,7 +109,7 @@ export default function Form(){
                 }}>
                     <div className="alert-wrapper">
                         {msgStatus === "success" || msgStatus === "failed" ? 
-                        <span className="alert-message">Message has been sent with code {response?.status}</span> : 
+                        <span className="alert-message">Message has been sent with code {msgStatus}</span> : 
                         <span className="alert-message">Submission denied. Error {errorType?.message} occured</span>}
                     </div>
                 </div>

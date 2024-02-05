@@ -59,7 +59,14 @@ def load_preprocessors():
 load_models()
 load_preprocessors()
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
+@app.errorhandler(404)
+def page_not_found(error):
+    print(error)
+    return 'This page does not exist', 404
 
 # upon loading of client side fetch the model names
 @app.route('/model-names', methods=['GET'])

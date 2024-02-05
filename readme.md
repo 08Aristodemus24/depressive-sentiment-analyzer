@@ -1,4 +1,4 @@
-# **STILL IN DEVELOPMENT**
+# **DEVELOPMENT FINISHED, DEPLOYMENT PENDING DUE TO EXCEEDING FILE SIZE OF 300MB**
 
 # This project aims to analyze depressive or non depressive messages using the depressive sentiment dataset from. Built with React.js, Flask, Scikit-Learn
 
@@ -17,7 +17,9 @@
 6. after installing packages/dependencies run `python index.py` while in this directory to run app locally
 
 # App usage:
-1. control panel of app will have 1 input: The image field which allows the user to upload an image and then upload it to the server for further preprocessing and subsequently fed to the trained model to predict a probability which will further be preprocessed to translate it from probability to prediction
+1. you can run the app via command: `python index.py`
+2. once run navigate to local host url `http://127.0.0.1:5000/`
+3. In control panel of app it will have 2 inputs: The dropdown field which allows the user to choose the gradient boosted model to test for different outcomes or performance of each model, and the message field which allows user to enter a certain message or sentence and then upload it to the server for further preprocessing and subsequently fed to the chosen trained model to predict a probability of whether such a message is classified as depressive or non depressive
 
 # File structure:
 ```
