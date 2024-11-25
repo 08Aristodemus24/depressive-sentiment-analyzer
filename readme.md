@@ -80,3 +80,24 @@
 |- .gitignore
 |- readme.md
 ```
+
+# Insights:
+* inside the `vercel.json` file in our root folder containing `index.py` or the script that runs the flask app, why we don't need to explicitly mention or state in vercel the `pip install -r requirements.txt` command is because we already provide vercel the information to use its own python somehow to do this installation for us. By virtue of mentioning python via `@vercel/python` we state that vercel automatically install the python dependencies the app has by using `pip install -r requirements.txt`
+``` 
+{
+    "version": 2,
+    "builds": [
+        { "src": "./index.py", "use": "@vercel/python" }
+    ],
+    "routes": [
+        { "src": "/(.*)", "dest": "/" }
+    ]
+}
+```
+
+* deployment issues:
+could be solved by using google cloud platform, azure, or aws, by using higher storage capacity for app. The idea is we would set up a remote server that can be accessed locally in your machine. This server will host the app you have by first requiring you to copy the necessaary files to this server by accessing it via your local machine kind of like virtual machines, which will require an ssh key.
+
+once files are copied to the server we can run the app remotely using our local machine, and once the app is running on the server it is live, and from here the idea is we can somehow change its domain name such that it runs not only with a localhost:5000 etc. domain but with a searchable one
+
+https://www.youtube.com/watch?v=5gSG5jwOJSY for deploying app to aws ec2 instance, or a virtual server you can access via ssh keys
