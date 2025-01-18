@@ -394,7 +394,7 @@ def translate_labels(labels, translations: dict={'DER': 'Derogatory',
     translated_labels = v_func(labels)
     return translated_labels
 
-def vectorize_sent(X_trains, X_cross, X_tests):
+def vectorize_sent(X_trains, X_tests):
     """
     vectorizes a set of sentences either using term frequency
     inverse document frequency or by count/frequency of a word
@@ -406,7 +406,6 @@ def vectorize_sent(X_trains, X_cross, X_tests):
     vectorizer = TfidfVectorizer()
     vectorizer.fit(X_trains)
     X_trains_vec = vectorizer.transform(X_trains).toarray()
-    X_cross_vec = vectorizer.transform(X_cross).toarray()
     X_tests_vec = vectorizer.transform(X_tests).toarray()
     
-    return X_trains_vec, X_cross_vec, X_tests_vec, vectorizer
+    return X_trains_vec, X_tests_vec, vectorizer
