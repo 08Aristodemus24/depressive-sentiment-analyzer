@@ -10,9 +10,6 @@ import pandas as pd
 import numpy as np
 import ast
 
-# download punkt if not already downloaded
-nltk.download('punkt')
-
 # this could be a feature engineering function used when 
 # the dataset is still raw. What I like to call pre feature
 # engineering

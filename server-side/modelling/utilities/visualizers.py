@@ -59,7 +59,7 @@ def data_split_metric_values(Y_true, Y_pred, metrics_to_use: list=['accuracy', '
 
     return metric_values
 
-def view_words(word_vec: dict, word_range: int, title: str="untitled", save_img: bool=True):
+def view_words(word_vec: dict, word_range: int, title: str="untitled", save_img: bool=True, style: str='dark'):
     """
     suitable for all discrete input
 
@@ -73,6 +73,14 @@ def view_words(word_vec: dict, word_range: int, title: str="untitled", save_img:
         
         word_range: int | bool=50
     """
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
 
     # slice the dictionary to a particular range
     sliced_word_vec = dict(itertools.islice(word_vec.items(), word_range))
@@ -120,7 +128,7 @@ def view_words(word_vec: dict, word_range: int, title: str="untitled", save_img:
         plt.savefig(f'./figures & images/{title}.png')
         plt.show()
 
-def view_value_frequency(word_counts, colormap: str="plasma", title: str="untitled", save_img: bool=True, kind: str='barh', limit: int=6, asc: bool=True):
+def view_value_frequency(word_counts, colormap: str="plasma", title: str="untitled", save_img: bool=True, kind: str='barh', limit: int=6, asc: bool=True, style: str='dark'):
     """
     suitable for all discrete input
 
@@ -140,6 +148,14 @@ def view_value_frequency(word_counts, colormap: str="plasma", title: str="untitl
 
         colormap - can be "viridis" | "crest" also
     """
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
 
     # get either last few words or first feww words
     data = word_counts[:limit].sort_values(ascending=asc)
@@ -163,7 +179,7 @@ def view_value_frequency(word_counts, colormap: str="plasma", title: str="untitl
         plt.savefig(f'./figures & images/{title}.png')
         plt.show()
 
-def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnBu', save_img: bool=True, labels: list=["Non-Depressive", "Depressive"]):
+def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnBu', save_img: bool=True, labels: list=["Non-Depressive", "Depressive"], style: str='dark'):
     """
     takes in the confusion matrix returned by the confusion_matrix()
     function from sklearn e.g. conf_matrix_train = confusion_matrix(
@@ -174,6 +190,15 @@ def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnB
         cmap - the color map you want the confusion matrix chart to have.
         Other values can be 'flare'
     """
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
+
     axis = sb.heatmap(conf_matrix, cmap=cmap, annot=True, fmt='g', xticklabels=labels, yticklabels=labels)
     axis.set_title(img_title, )
 
@@ -181,7 +206,7 @@ def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnB
         plt.savefig(f'./figures & images/{img_title}.png')
         plt.show()
 
-def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=True, colormap: str='mako'):
+def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=True, colormap: str='mako', style: str='dark'):
     """
     given a each list of the training, validation, and testing set
     groups accuracy, precision, recall, and f1-score, plot a bar
@@ -203,6 +228,15 @@ def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=Tru
         'f1-score': [train_f1, val_f1, test_f1]
     })
     """
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
+
     colors = []
 
     # excludes the data split column
@@ -237,7 +271,7 @@ def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=Tru
         plt.savefig(f'./figures & images/{img_title}.png')
         plt.show()
 
-def view_classified_labels(df, img_title: str="untitled", save_img: bool=True, colors: list=['#db7f8e', '#b27392']):
+def view_classified_labels(df, img_title: str="untitled", save_img: bool=True, colors: list=['#db7f8e', '#b27392'], style: str='dark'):
     """
     given a each list of the training, validation, and testing set
     groups accuracy, precision, recall, and f1-score, plot a bar
@@ -261,6 +295,14 @@ def view_classified_labels(df, img_title: str="untitled", save_img: bool=True, c
         'misclassified': [num_wrong_cm_train, num_wrong_cm_val, num_wrong_cm_test]}, 
         index=["training set", "validation set", "testing set"])
     """
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
 
     fig = plt.figure(figsize=(15, 10))
     axis = fig.add_subplot()
@@ -281,7 +323,7 @@ def view_classified_labels(df, img_title: str="untitled", save_img: bool=True, c
         plt.savefig(f'./figures & images/{img_title}.png')
         plt.show()
 
-def view_label_freq(label_freq, img_title: str="untitled", save_img: bool=True, labels: list | pd.Series | np.ndarray=["DER", "NDG", "OFF", "HOM"], horizontal: bool=True):
+def view_label_freq(label_freq, img_title: str="untitled", save_img: bool=True, labels: list | pd.Series | np.ndarray=["DER", "NDG", "OFF", "HOM"], horizontal: bool=True, style: str='dark'):
     """
     suitable for all discrete input
 
@@ -294,6 +336,14 @@ def view_label_freq(label_freq, img_title: str="untitled", save_img: bool=True, 
         labels - a list of all the labels we want to use in the 
         vertical bar graph
     """
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
 
     # plots the unique labels against the count of these unique labels
 
@@ -309,7 +359,7 @@ def view_label_freq(label_freq, img_title: str="untitled", save_img: bool=True, 
         plt.savefig(f'./figures & images/{img_title}.png')
         plt.show()
 
-def plot_all_features(X, hue=None, colormap: str='mako'):
+def plot_all_features(X, hue=None, colormap: str='mako', style: str='dark'):
     """
     suitable for: all discrete inputs, both discrete and continuous inputs,
     and all continuous inputs
@@ -321,7 +371,14 @@ def plot_all_features(X, hue=None, colormap: str='mako'):
         hue - a string that if provided will make the diagonals
         of the pairplot to be bell curves of the provided string feature
     """
-    
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
 
     sb.set_palette(colormap)
     sb.pairplot(X, hue=hue, plot_kws={'marker': 'p', 'linewidth': 1})
@@ -432,7 +489,7 @@ class ModelResults:
                 img_title="model performance using {} dataset for {} metric".format(dataset_id, curr_metric)
             )
 
-    def view_train_cross_results(self, results: dict, epochs: list, curr_metrics_indeces: tuple, save_img: bool, img_title: str="untitled"):
+    def view_train_cross_results(self, results: dict, epochs: list, curr_metrics_indeces: tuple, save_img: bool, img_title: str="untitled", style: str='dark'):
         """
         plots the number of epochs against the cost given cost values 
         across these epochs.
@@ -441,6 +498,14 @@ class ModelResults:
             results - is a dictionary created by the utility preprocessor
             function build_results()
         """
+        styles = {
+            'dark': 'dark_background',
+            'solarized': 'Solarized_Light2',
+            '538': 'fivethirtyeight',
+            'ggplot': 'ggplot',
+        }
+
+        plt.style.use(styles.get(style, 'default'))
 
         figure = plt.figure(figsize=(15, 10))
         axis = figure.add_subplot()
@@ -517,10 +582,19 @@ class ModelResults:
         # delete figure
         del figure
 
-def view_all_splits_results(history_dict: dict, save_img: bool=True, img_title: str="untitled"):
+def view_all_splits_results(history_dict: dict, save_img: bool=True, img_title: str="untitled", style: str='dark'):
     """
     
     """
+    styles = {
+        'dark': 'dark_background',
+        'solarized': 'Solarized_Light2',
+        '538': 'fivethirtyeight',
+        'ggplot': 'ggplot',
+    }
+
+    plt.style.use(styles.get(style, 'default'))
+
     history_df = pd.DataFrame(history_dict)
     print(history_df)
 

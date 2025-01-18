@@ -15,6 +15,7 @@ import ast
 # download stopwords and wordnet if not already downloaded
 nltk.download('stopwords')
 nltk.download('wordnet')
+nltk.download('punkt')
 
 def encode_features(X):
     """
