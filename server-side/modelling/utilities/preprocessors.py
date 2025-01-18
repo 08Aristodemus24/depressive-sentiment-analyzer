@@ -1,9 +1,9 @@
 import re
 import nltk
-from nltk.stem.porter import PorterStemmer
 from nltk.stem.snowball import SnowballStemmer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, OrdinalEncoder, LabelEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer

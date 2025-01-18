@@ -163,7 +163,7 @@ def view_value_frequency(word_counts, colormap: str="plasma", title: str="untitl
         plt.savefig(f'./figures & images/{title}.png')
         plt.show()
 
-def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnBu', save_img: bool=True):
+def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnBu', save_img: bool=True, labels: list=["Non-Depressive", "Depressive"]):
     """
     takes in the confusion matrix returned by the confusion_matrix()
     function from sklearn e.g. conf_matrix_train = confusion_matrix(
@@ -174,7 +174,7 @@ def multi_class_heatmap(conf_matrix, img_title: str="untitled", cmap: str='YlGnB
         cmap - the color map you want the confusion matrix chart to have.
         Other values can be 'flare'
     """
-    axis = sb.heatmap(conf_matrix, cmap=cmap, annot=True, fmt='g')
+    axis = sb.heatmap(conf_matrix, cmap=cmap, annot=True, fmt='g', xticklabels=labels, yticklabels=labels)
     axis.set_title(img_title, )
 
     if save_img:
