@@ -133,7 +133,7 @@ def predict():
     # post feature engineering
     n_chars = count_chars(message)
     n_words = count_words(message)
-    n_unique_words = count_unique_words(message)
+    # n_unique_words = count_unique_words(message)
 
 
     model_name = raw_data['model_name']
@@ -142,10 +142,11 @@ def predict():
 
     # once x features are collected normalize the array on the 
     # saved scaler
-    X_vec = saved_ddr_tfidf_vec.transform(message).toarray().flatten()
-    print(X_vec)
+    X_vec = saved_ddr_tfidf_vec.transform([message]).toarray().flatten()
+    X_feats = np.array([n_capital_chars, n_capital_words, n_sents, n_stopwords, n_chars, n_words])
+    print(X_vec, X_feats)
     
-    features = np.hstack([[n_capital_chars, n_capital_words, n_sents, n_stopwords, n_chars, n_words, n_unique_words], X_vec]).reshape(1, -1)
+    features = np.hstack([X_feats, X_vec]).reshape(1, -1)
     
     # predictor
     Y_preds = model.predict(features)
