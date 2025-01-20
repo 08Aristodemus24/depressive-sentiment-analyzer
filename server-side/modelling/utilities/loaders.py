@@ -124,7 +124,6 @@ def get_top_models(models_train, models_cross, pool_size: int=10, model_type: st
     return top_models
 
 def create_metrics_df(train_metric_values, 
-                      val_metric_values, 
                       test_metric_values, 
                       metrics=['accuracy', 'precision', 'recall', 'f1-score']):
     """
@@ -132,13 +131,12 @@ def create_metrics_df(train_metric_values,
     """
 
     metrics_dict = {
-        'data_split': ['training', 'validation', 'testing']
+        'data_split': ['training', 'testing']
     }
 
     for index, metric in enumerate(metrics):
         metrics_dict[metric] = [
             train_metric_values[index], 
-            val_metric_values[index],
             test_metric_values[index]
         ]
 

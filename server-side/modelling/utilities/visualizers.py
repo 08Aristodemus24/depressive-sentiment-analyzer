@@ -23,7 +23,7 @@ import itertools
 
 
 
-def data_split_metric_values(Y_true, Y_pred, metrics_to_use: list=['accuracy', 'precision', 'recall', 'f1', 'roc-auc']):
+def data_split_metric_values(Y_true, Y_pred, Y_pred_prob, metrics_to_use: list=['accuracy', 'precision', 'recall', 'f1', 'roc-auc']):
     """
     args:
         Y_true - a vector of the real Y values of a data split e.g. the 
@@ -32,24 +32,17 @@ def data_split_metric_values(Y_true, Y_pred, metrics_to_use: list=['accuracy', '
         Y_pred - a vector of the predicted Y values of an ML model given 
         a data split e.g. a training set, validation set, test set
 
-        unique_labels - the unique values of the target/real Y output
-        values. Note that it is not a good idea to pass the unique labels
-        of one data split since it may not contain all unique labels
-
         given these arguments it creates a bar graph of all the relevant
         metrics in evaluating an ML model e.g. accuracy, precision,
         recall, and f1-score.
     """
-    unique_labels = np.unique(Y_true)
 
     metrics = {
-        'accuracy': accuracy_score(Y_true, Y_pred),
-        'rmse': np.sqrt(mean_squared_error(Y_true, Y_pred)),
-        'mse': mean_squared_error(Y_true, Y_pred),
-        'precision': precision_score(Y_true, Y_pred, labels=unique_labels, average='weighted'),
-        'recall': recall_score(Y_true, Y_pred, labels=unique_labels, average='weighted'),
-        'f1': f1_score(Y_true, Y_pred, labels=unique_labels, average='weighted'),
-        'roc-auc': roc_auc_score(Y_true, Y_pred, labels=unique_labels, average='weighted')
+        'accuracy': accuracy_score(y_true=Y_true, y_pred=Y_pred),
+        'precision': precision_score(y_true=Y_true, y_pred=Y_pred, average='weighted'),
+        'recall': recall_score(y_true=Y_true, y_pred=Y_pred, average='weighted'),
+        'f1': f1_score(y_true=Y_true, y_pred=Y_pred, average='weighted'),
+        'roc-auc': Y_pred_prob if Y_pred_prob.all() == None else roc_auc_score(y_true=Y_true, y_score=Y_pred_prob, average='weighted', multi_class='ovr')
     }
 
     # create metric_values dictionary

@@ -15,8 +15,26 @@ from modelling.utilities.preprocessors import (
     stem_corpus_words,
     lemmatize_corpus_words,
     strip_final_corpus,
-    translate_labels
-)
+    translate_labels)
+
+from modelling.utilities.feature_engineers import (
+    # pre feature engineering
+    count_capital_chars,
+    count_capital_words,
+    count_punctuations,
+    count_sent,
+    count_stopwords,
+
+    # you can use this for X/twitter posts
+    count_htags,
+    count_mentions,
+    
+    # post feature engineering
+    count_chars,
+    count_words,
+    count_unique_words)
+
+import numpy as np
 
 # configure location of build file and the static html template file
 app = Flask(__name__, template_folder='static')
@@ -97,14 +115,26 @@ def predict():
 
     # encoding and preprocessing
     message = raw_data['message']
+
+    # pre feature engineering
+    n_capital_chars = count_capital_chars(message)
+    n_capital_words = count_capital_words(message)
+    n_sents = count_sent(message)
+    n_stopwords = count_stopwords(message)
+
+    # preprocessing
     message = lower_words(message)
     message = remove_contractions(message)
     message = rem_non_alpha_num(message)
-    message = rem_numeric(message)
-    message = rem_stop_words(message)
     message = stem_corpus_words(message)
     message = lemmatize_corpus_words(message)
-    message = [strip_final_corpus(message)]
+    message = strip_final_corpus(message)
+
+    # post feature engineering
+    n_chars = count_chars(message)
+    n_words = count_words(message)
+    n_unique_words = count_unique_words(message)
+
 
     model_name = raw_data['model_name']
     print(model_name)
@@ -112,15 +142,17 @@ def predict():
 
     # once x features are collected normalize the array on the 
     # saved scaler
-    X_vec = saved_ddr_tfidf_vec.transform(message)
+    X_vec = saved_ddr_tfidf_vec.transform(message).toarray().flatten()
     print(X_vec)
     
+    features = np.hstack([[n_capital_chars, n_capital_words, n_sents, n_stopwords, n_chars, n_words, n_unique_words], X_vec]).reshape(1, -1)
+    
     # predictor
-    Y_preds = model.predict(X_vec)
+    Y_preds = model.predict(features)
     print(Y_preds)
     decoded_sparse_Y_preds = saved_ddr_le.inverse_transform(Y_preds)
     print(decoded_sparse_Y_preds)
-    translated_labels = translate_labels(decoded_sparse_Y_preds, translations={'DPR': 'Depressive', 'NDP': 'Non-Depressive'})
+    translated_labels = translate_labels(decoded_sparse_Y_preds, translations={'mild': 'mild', 'minimum': 'minimum', 'moderate': 'moderate', 'severe': 'severe'})
     print(translated_labels)
 
     return jsonify({'sentiment': translated_labels.tolist()})
