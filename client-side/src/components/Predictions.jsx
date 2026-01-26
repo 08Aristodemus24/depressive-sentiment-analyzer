@@ -21,10 +21,11 @@ export default function Predictions({ children }){
     
     // retrieve the prediction from the backend
     const { response } = useContext(FormInputsContext);
+    console.log(response);
 
     return (
         <div className={`predictions-container ${design}`} style={style}>
-            predicted value: {response?.sentiment}
+            predicted value: {response?.prediction ? response?.prediction : response?.error}
         </div>
     );
 }

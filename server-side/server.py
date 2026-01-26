@@ -140,20 +140,25 @@ def predict():
     print(model_name)
     model = models[model_name]
 
-    # once x features are collected normalize the array on the 
-    # saved scaler
-    X_vec = saved_ddr_tfidf_vec.transform([message]).toarray().flatten()
-    X_feats = np.array([n_capital_chars, n_capital_words, n_sents, n_stopwords, n_chars, n_words])
-    print(X_vec, X_feats)
-    
-    features = np.hstack([X_feats, X_vec]).reshape(1, -1)
-    
-    # predictor
-    Y_preds = model.predict(features)
-    print(Y_preds)
-    decoded_sparse_Y_preds = saved_ddr_le.inverse_transform(Y_preds)
-    print(decoded_sparse_Y_preds)
-    translated_labels = translate_labels(decoded_sparse_Y_preds, translations={'mild': 'mild', 'minimum': 'minimum', 'moderate': 'moderate', 'severe': 'severe'})
-    print(translated_labels)
+    try:
+        # once x features are collected normalize the array on the 
+        # saved scaler
+        X_vec = saved_ddr_tfidf_vec.transform([message]).toarray().flatten()
+        X_feats = np.array([n_capital_chars, n_capital_words, n_sents, n_stopwords, n_chars, n_words])
+        print(X_vec, X_feats)
+        
+        features = np.hstack([X_feats, X_vec]).reshape(1, -1)
+        print(features.shape)
+        
+        # predictor 
+        Y_preds = model.predict(features)
+        print(Y_preds)
+        decoded_sparse_Y_preds = saved_ddr_le.inverse_transform(Y_preds)
+        print(decoded_sparse_Y_preds)
+        translated_labels = translate_labels(decoded_sparse_Y_preds, translations={'mild': 'mild', 'minimum': 'minimum', 'moderate': 'moderate', 'severe': 'severe'})
+        print(translated_labels)
 
-    return jsonify({'sentiment': translated_labels.tolist()})
+        return jsonify({'sentiment': translated_labels.tolist()})
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'An error occurred during prediction.'}), 500

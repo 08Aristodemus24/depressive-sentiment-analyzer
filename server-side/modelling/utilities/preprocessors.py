@@ -50,7 +50,7 @@ def normalize_train_cross(X_trains, X_cross, scaler='min_max'):
     scaler is saved and later used)
     """
 
-    temp = MinMaxScaler() if scaler is 'min_max' else StandardScaler()
+    temp = MinMaxScaler() if scaler == 'min_max' else StandardScaler()
     X_trains_normed = temp.fit_transform(X_trains)
     X_cross_normed = temp.transform(X_cross)
 
@@ -394,7 +394,7 @@ def translate_labels(labels, translations: dict={'DER': 'Derogatory',
     translated_labels = v_func(labels)
     return translated_labels
 
-def vectorize_sent(X_trains, X_tests):
+def vectorize_sent(X_trains, X_tests, max_features=None):
     """
     vectorizes a set of sentences either using term frequency
     inverse document frequency or by count/frequency of a word
@@ -403,7 +403,7 @@ def vectorize_sent(X_trains, X_tests):
     returns a vectorizer object for later saving
     """
 
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(max_features=max_features)
     vectorizer.fit(X_trains)
     X_trains_vec = vectorizer.transform(X_trains).toarray()
     X_tests_vec = vectorizer.transform(X_tests).toarray()

@@ -1,4 +1,8 @@
 # **DEVELOPMENT FINISHED, DEPLOYMENT PENDING DUE TO EXCEEDING FILE SIZE OF 300MB**
+1. run docker build -t depressive-sentiment-analyzer . to build image
+2. once image is built run docker run -p 5000:5000 to run image as container
+3. 
+
 
 # This project aims to analyze depressive or non depressive messages using the depressive sentiment dataset from. Built with React.js, Flask, Scikit-Learn
 
@@ -101,3 +105,78 @@ could be solved by using google cloud platform, azure, or aws, by using higher s
 once files are copied to the server we can run the app remotely using our local machine, and once the app is running on the server it is live, and from here the idea is we can somehow change its domain name such that it runs not only with a localhost:5000 etc. domain but with a searchable one
 
 https://www.youtube.com/watch?v=5gSG5jwOJSY for deploying app to aws ec2 instance, or a virtual server you can access via ssh keys
+
+# Errors To Resolve:
+```
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1466, in wsgi_app
+
+    response = self.handle_exception(e)
+
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+
+                                                ^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1463, in wsgi_app
+
+    response = self.full_dispatch_request()
+
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 872, in full_dispatch_request
+
+    rv = self.handle_user_exception(e)
+
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+
+                                                ^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 870, in full_dispatch_request
+
+    rv = self.dispatch_request()
+
+         ^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 855, in dispatch_request
+
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/server-side/server.py", line 152, in predict
+
+    Y_preds = model.predict(features)
+
+              ^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/xgboost/sklearn.py", line 1553, in predict
+
+    class_probs = super().predict(
+
+                  ^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/xgboost/sklearn.py", line 1168, in predict
+
+    predts = self.get_booster().inplace_predict(
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/usr/local/lib/python3.12/site-packages/xgboost/core.py", line 2428, in inplace_predict
+
+    raise ValueError(
+
+ValueError: Feature shape mismatch, expected: 9014, got 11361
+```
+
+this is due to scikit learn now changing its number of features from 11355 to now 9008, we had originally 11355 + 6 hand made features in training our model, but because tfidf in certain version maybe now went from 11355 to 9008 for our dataset, the total features would now just be 9008 + 6 hand made features or 9014 which our model did not train on
+
+we need to implement also here a way of reimplementing feature engineering to include n punctuations, and rebalancing our dataset to the right amount of classes 
+
+so kaya pala pati docker nag eerror kasi the predict function doesn't actually return anything because the error is intercepted quickly

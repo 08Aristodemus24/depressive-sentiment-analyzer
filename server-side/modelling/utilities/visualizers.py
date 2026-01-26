@@ -250,6 +250,11 @@ def view_metric_values(metrics_df, img_title: str="untitled", save_img: bool=Tru
     # uses the given array of the colors you want to use
     sb.set_palette(sb.color_palette(sampled_colors))
 
+    #     data_split	accuracy	precision	recall	f1-score	roc-auc
+    # 0	training	0.989796	0.989936	0.989796	0.989731	0.999963
+    # 1	testing	0.727145	0.666762	0.727145	0.667366	0.752645
+
+
     # create accuracy, precision, recall, f1-score of training group
     # create accuracy, precision, recall, f1-score of validation group
     # create accuracy, precision, recall, f1-score of testing group
