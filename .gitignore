@@ -28,3 +28,5 @@
 /client-side/*.sln
 /client-side/*.sw?
 
+/server-side/modelling/figures & images/deployment/
+

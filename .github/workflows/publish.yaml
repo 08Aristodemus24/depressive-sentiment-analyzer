@@ -1,0 +1,56 @@
+# this is a github actions workflow when we push changes
+# to our github repository and reflect those changes in our
+# azure container registry and subsequently deploy those changes
+# in our azure container apps instance
+name: CI/CD - Deploy Sentiment Analyzer to ACA
+
+on:
+  # specifies that on push events trigger the github
+  # actions workflow below
+  push:
+    branches: ["main"] # Triggers whenever you push to main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # a specific version of the official GitHub Action 
+      # used in a workflow to download your repository's 
+      # code onto the runner machine. Since we are not
+      # doing the steps of logging in to Azure CLI, building
+      # and pushing images, deploying those images to ACA
+      # locally anymore we need some machine to execute
+      # these commands for us
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # github action for logging in to azure cli using
+      # provided credentials. Note we will provide our az
+      # creds in github actions secrets
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          # client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          # tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          # subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: build and tag docker image
+        run: |
+          docker build -t depressive-sentiment-analyzer .
+          docker tag depressive-sentiment-analyzer:latest ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
+
+      # - name: Build and Push to ACR
+      #   run: |
+      #     az acr login --name ${{ secrets.ACR_NAME }}
+      #     docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }} .
+      #     docker push ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
+
+      # - name: Deploy to Container Apps
+      #   uses: azure/container-apps-deploy-action@v1
+      #   with:
+      #     acrName: ${{ secrets.ACR_NAME }}
+      #     containerAppName: ${{ secrets.CONTAINER_APP_NAME }}
+      #     resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+      #     imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
+      #     targetPort: 5000
