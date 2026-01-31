@@ -30,21 +30,23 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          # client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          # tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          # subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          # creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: build and tag docker image
-        run: |
-          docker build -t depressive-sentiment-analyzer .
-          docker tag depressive-sentiment-analyzer:latest ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
-
-      # - name: Build and Push to ACR
+      # - name: build and tag docker image
       #   run: |
-      #     az acr login --name ${{ secrets.ACR_NAME }}
-      #     docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }} .
-      #     docker push ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
+      #     docker build -t depressive-sentiment-analyzer .
+      #     docker tag depressive-sentiment-analyzer:latest ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
+
+      # this is in place of the above so we don't have to run
+      # docker login <acr login server> anymore
+      - name: Build and Push to ACR
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }} .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
 
       # - name: Deploy to Container Apps
       #   uses: azure/container-apps-deploy-action@v1
