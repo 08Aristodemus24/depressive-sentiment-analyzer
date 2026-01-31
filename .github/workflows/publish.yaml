@@ -8,7 +8,7 @@ on:
   # specifies that on push events trigger the github
   # actions workflow below
   push:
-    branches: ["main"] # Triggers whenever you push to main
+    branches: ["master"] # Triggers whenever you push to main
 
 jobs:
   build-and-deploy:
