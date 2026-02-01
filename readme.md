@@ -79,6 +79,11 @@ from there you will be logged out of docker of whatever previous user was there 
 
 12. once we deployed the app service instance it is importatnt to note that locations of azure container registry instances and azure app services are important as too far apart locations might interfere with the loading of the deployed application. Ideally if acr is eastus then aas must also be created in eastus
 
+13. once learned and done by hand the above all of it can be done in an automated fashion using github actions CI/CD (continuous integration and continuous deployment) we just have to setup the tasks that we need at each step meaning the commands we ran in order to deploy our docker image as a container in azure container apps like building the image, tagging the image, logging in to our ACR using docker with issued ACR credentials, pushing the built image to ACR, and finally deploying the image as a container to ACA, with our current repositories environment and secrets already set so that github actions can just access them and run the commands that need them
+
+of course this is all assuming our azure container registry and our azure container apps have already been setup
+
+
 
 
 # This project aims to analyze depressive or non depressive messages using the depressive sentiment dataset from. Built with React.js, Flask, Scikit-Learn
