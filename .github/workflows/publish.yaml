@@ -35,26 +35,35 @@ jobs:
           # tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           # subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-
+      # same goes with building, tagging, and subsequently
+      # logging in to our ACR using docker using our ACR creds
+      # we need to create and specify them in our this
+      # repository's github actions secrets 
       - name: Build and tag docker image
         run: |
           docker build -t depressive-sentiment-analyzer .
           docker tag depressive-sentiment-analyzer:latest ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
 
-      # # this is in place of the above so we don't have to run
-      # # docker login <acr login server> anymore and be prompted
-      # # by a cli to enter our username and password
-      # - name: Build and Push to ACR
-      #   run: |
-      #     az acr login --name ${{ secrets.ACR_NAME }}
-      #     docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }} .
-      #     docker push ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
-
-      # - name: Deploy to Container Apps
-      #   uses: azure/container-apps-deploy-action@v1
-      #   with:
-      #     acrName: ${{ secrets.ACR_NAME }}
-      #     containerAppName: ${{ secrets.CONTAINER_APP_NAME }}
-      #     resourceGroup: ${{ secrets.RESOURCE_GROUP }}
-      #     imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
-      #     targetPort: 5000
+      # equivalent to `docker login <azure container registry name>`
+      # which will prompt you with your issued azure container 
+      # registry username and password upon acr creation
+      - name: Log in to ACR with Docker using ACR creds
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_NAME }}.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      
+      # equivalent to 
+      # `docker push dataengineeringpathcr.azurecr.io/depressive-sentiment-analyzer:v1`
+      - name: Push docker image to ACR
+        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
+    
+      - name: Deploy to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: ${{ secrets.ACR_NAME }}
+          containerAppName: depressive-sentiment-analyzer
+          resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
+          targetPort: 5000
