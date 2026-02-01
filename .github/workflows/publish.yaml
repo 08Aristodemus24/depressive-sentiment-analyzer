@@ -46,7 +46,7 @@ jobs:
 
       # equivalent to `docker login <azure container registry name>`
       # which will prompt you with your issued azure container 
-      # registry username and password upon acr creation
+      # registry username and password upon acr creation 
       - name: Log in to ACR with Docker using ACR creds
         uses: docker/login-action@v3
         with:
