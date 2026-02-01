@@ -59,6 +59,8 @@ jobs:
       - name: Push docker image to ACR
         run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/depressive-sentiment-analyzer:${{ github.sha }}
     
+      # this will deploy our current image in ACR to
+      # our azure container apps instance
       - name: Deploy to Container Apps
         uses: azure/container-apps-deploy-action@v1
         with:
